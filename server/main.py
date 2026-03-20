@@ -326,6 +326,57 @@ def get_monthly_trends():
     result.sort(key=lambda x: x['month'])
     return result
 
+class Task(BaseModel):
+    id: str
+    title: str
+    status: str
+    priority: Optional[str] = None
+    due_date: Optional[str] = None
+
+class CreateTaskRequest(BaseModel):
+    title: str
+    priority: Optional[str] = None
+    due_date: Optional[str] = None
+
+# In-memory task store
+_tasks: list = []
+_task_counter: int = 0
+
+@app.get("/api/tasks", response_model=List[Task])
+def get_tasks():
+    return _tasks
+
+@app.post("/api/tasks", response_model=Task)
+def create_task(task: CreateTaskRequest):
+    global _task_counter
+    _task_counter += 1
+    new_task = {
+        "id": f"task-{_task_counter}",
+        "title": task.title,
+        "status": "pending",
+        "priority": task.priority,
+        "due_date": task.due_date,
+    }
+    _tasks.append(new_task)
+    return new_task
+
+@app.patch("/api/tasks/{task_id}", response_model=Task)
+def toggle_task(task_id: str):
+    task = next((t for t in _tasks if t["id"] == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    task["status"] = "completed" if task["status"] == "pending" else "pending"
+    return task
+
+@app.delete("/api/tasks/{task_id}")
+def delete_task(task_id: str):
+    global _tasks
+    task = next((t for t in _tasks if t["id"] == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    _tasks = [t for t in _tasks if t["id"] != task_id]
+    return {"ok": True}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
