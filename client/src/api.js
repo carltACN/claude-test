@@ -107,5 +107,15 @@ export const api = {
   async getPurchaseOrderByBacklogItem(backlogItemId) {
     const response = await axios.get(`${API_BASE_URL}/purchase-orders/${backlogItemId}`)
     return response.data
+  },
+
+  async getReportsQuarterly() {
+    const response = await axios.get(`${API_BASE_URL}/reports/quarterly`)
+    return response.data
+  },
+
+  async getReportsTrends() {
+    const response = await axios.get(`${API_BASE_URL}/reports/monthly-trends`)
+    return response.data
   }
 }
