@@ -109,13 +109,23 @@ export const api = {
     return response.data
   },
 
-  async getReportsQuarterly() {
-    const response = await axios.get(`${API_BASE_URL}/reports/quarterly`)
+  async getReportsQuarterly(filters = {}) {
+    const params = new URLSearchParams()
+    if (filters.warehouse && filters.warehouse !== 'all') params.append('warehouse', filters.warehouse)
+    if (filters.category && filters.category !== 'all') params.append('category', filters.category)
+    if (filters.month && filters.month !== 'all') params.append('month', filters.month)
+
+    const response = await axios.get(`${API_BASE_URL}/reports/quarterly?${params.toString()}`)
     return response.data
   },
 
-  async getReportsTrends() {
-    const response = await axios.get(`${API_BASE_URL}/reports/monthly-trends`)
+  async getReportsTrends(filters = {}) {
+    const params = new URLSearchParams()
+    if (filters.warehouse && filters.warehouse !== 'all') params.append('warehouse', filters.warehouse)
+    if (filters.category && filters.category !== 'all') params.append('category', filters.category)
+    if (filters.month && filters.month !== 'all') params.append('month', filters.month)
+
+    const response = await axios.get(`${API_BASE_URL}/reports/monthly-trends?${params.toString()}`)
     return response.data
   },
 
