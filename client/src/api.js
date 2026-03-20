@@ -117,5 +117,16 @@ export const api = {
   async getReportsTrends() {
     const response = await axios.get(`${API_BASE_URL}/reports/monthly-trends`)
     return response.data
+  },
+
+async searchInventory(   query,filters={}){
+  const params=new URLSearchParams()
+  if(filters.warehouse&&filters.warehouse!=='all'){params.append('warehouse',filters.warehouse)}
+      if(filters.category &&filters.category!=='all') {
+  params.append('category',filters.category)}
+  if(query){
+params.append('q',query)}
+  const response=await axios.get(`${API_BASE_URL}/inventory/search?`+params.toString())
+  return response.data
   }
 }
